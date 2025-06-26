@@ -10,7 +10,7 @@ install_arch() {
     kitty feh scrot network-manager-applet networkmanager-openvpn \
     pipewire pipewire-audio pipewire-alsa pipewire-pulse wireplumber \
     blueman bluez bluez-utils \
-    clipit gsimplecal ttf-ubuntu-font-family xorg
+    copyq gsimplecal ttf-ubuntu-font-family xorg
   sudo systemctl enable lightdm
   sudo systemctl enable NetworkManager
   sudo systemctl enable bluetooth
@@ -39,7 +39,7 @@ exec_always --no-startup-id blueman-applet
 exec_always --no-startup-id pipewire &
 exec_always --no-startup-id wireplumber &
 exec_always --no-startup-id feh --bg-scale ~/Pictures/wallpaper.jpg
-exec_always --no-startup-id clipit
+exec_always --no-startup-id copyq
 exec_always --no-startup-id gsimplecal
 exec_always --no-startup-id ~/.config/polybar/launch.sh
 
@@ -109,7 +109,7 @@ format-volume = " %volume%%"
 [module/clipboard]
 type = custom/script
 exec = echo "📋"
-click-left = clipit
+click-left = copyq show
 
 [module/tray]
 type = internal/tray
