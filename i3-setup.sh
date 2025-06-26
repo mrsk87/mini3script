@@ -1,17 +1,19 @@
 #!/bin/bash
 set -e
 
-echo "=== i3 Setup (completo) ==="
+echo "=== i3 Setup (completo com PipeWire e Bluetooth) ==="
 read -p "Seu sistema é [a]rch ou [d]ebian? " distro
 
 install_arch() {
   sudo pacman -Syu --noconfirm
   sudo pacman -S --noconfirm i3 polybar lightdm lightdm-gtk-greeter \
     kitty feh scrot network-manager-applet networkmanager-openvpn \
-    pipewire pipewire-pulse pipewire-alsa wireplumber \
+    pipewire pipewire-audio pipewire-alsa pipewire-pulse wireplumber \
+    blueman bluez bluez-utils \
     clipit gsimplecal ttf-ubuntu-font-family xorg xterm
   sudo systemctl enable lightdm
   sudo systemctl enable NetworkManager
+  sudo systemctl enable bluetooth
 }
 
 install_debian() {
@@ -19,9 +21,11 @@ install_debian() {
     i3 polybar lightdm lightdm-gtk-greeter \
     kitty feh scrot network-manager-gnome network-manager-openvpn \
     pipewire pipewire-audio wireplumber \
+    blueman bluetooth bluez \
     clipit gsimplecal fonts-ubuntu xorg xterm
   sudo systemctl enable lightdm
   sudo systemctl enable NetworkManager
+  sudo systemctl enable bluetooth
 }
 
 setup_i3_config() {
@@ -31,6 +35,7 @@ set \$mod Mod4
 font pango:Ubuntu 10
 
 exec_always --no-startup-id nm-applet
+exec_always --no-startup-id blueman-applet
 exec_always --no-startup-id pipewire &
 exec_always --no-startup-id wireplumber &
 exec_always --no-startup-id feh --bg-scale ~/Pictures/wallpaper.jpg
@@ -138,4 +143,4 @@ setup_i3_config
 setup_polybar
 setup_wallpaper_placeholder
 
-echo "[✓] Instalação concluída. Reinicie e entre no i3!"
+echo "[✓] Tudo pronto! Reinicie para carregar o i3 com PipeWire, Polybar, Bluetooth e mais."
