@@ -1,38 +1,73 @@
 #!/bin/bash
-
 set -e
 
-echo "=== i3 POS-INSTALAÇÃO ==="
-echo "Este script instala um ambiente i3 com polybar, tray, clipboard, som e mais."
-echo
+echo "=== i3 Setup (completo) ==="
 read -p "Seu sistema é [a]rch ou [d]ebian? " distro
 
 install_arch() {
-  echo "[+] Instalando pacotes para Arch Linux..."
   sudo pacman -Syu --noconfirm
-  sudo pacman -S --noconfirm i3 polybar network-manager-applet pasystray clipit gsimplecal ttf-ubuntu-font-family xorg xterm
+  sudo pacman -S --noconfirm i3 polybar lightdm lightdm-gtk-greeter \
+    kitty feh scrot network-manager-applet networkmanager-openvpn \
+    pipewire pipewire-pulse pipewire-alsa wireplumber \
+    clipit gsimplecal ttf-ubuntu-font-family xorg xterm
+  sudo systemctl enable lightdm
+  sudo systemctl enable NetworkManager
 }
 
 install_debian() {
-  echo "[+] Instalando pacotes para Debian..."
-  sudo apt update
-  sudo apt install -y i3 polybar network-manager-gnome pasystray clipit gsimplecal fonts-ubuntu xorg xterm
+  sudo apt update && sudo apt install -y \
+    i3 polybar lightdm lightdm-gtk-greeter \
+    kitty feh scrot network-manager-gnome network-manager-openvpn \
+    pipewire pipewire-audio wireplumber \
+    clipit gsimplecal fonts-ubuntu xorg xterm
+  sudo systemctl enable lightdm
+  sudo systemctl enable NetworkManager
 }
 
-setup_autostart() {
-  echo "[+] Criando autostart no i3..."
+setup_i3_config() {
   mkdir -p ~/.config/i3
   cat > ~/.config/i3/config <<EOF
+set \$mod Mod4
+font pango:Ubuntu 10
+
 exec_always --no-startup-id nm-applet
-exec_always --no-startup-id pasystray
+exec_always --no-startup-id pipewire &
+exec_always --no-startup-id wireplumber &
+exec_always --no-startup-id feh --bg-scale ~/Pictures/wallpaper.jpg
 exec_always --no-startup-id clipit
 exec_always --no-startup-id gsimplecal
 exec_always --no-startup-id ~/.config/polybar/launch.sh
+
+# Atalhos principais
+bindsym \$mod+Return exec kitty
+bindsym \$mod+d exec dmenu_run
+bindsym \$mod+Shift+q kill
+bindsym \$mod+Shift+s exec scrot -s -e 'mv \$f ~/Pictures/Screenshots/'
+
+# Navegação
+bindsym \$mod+Left focus left
+bindsym \$mod+Right focus right
+bindsym \$mod+Up focus up
+bindsym \$mod+Down focus down
+
+# Janela
+bindsym \$mod+f fullscreen toggle
+bindsym \$mod+Shift+space floating toggle
+
+# Reiniciar/fechar i3
+bindsym \$mod+Shift+r restart
+bindsym \$mod+Shift+e exit
+
+# Workspace
+bindsym \$mod+1 workspace 1
+bindsym \$mod+2 workspace 2
+bindsym \$mod+3 workspace 3
+bindsym \$mod+4 workspace 4
+bindsym \$mod+5 workspace 5
 EOF
 }
 
 setup_polybar() {
-  echo "[+] Configurando Polybar..."
   mkdir -p ~/.config/polybar
   cat > ~/.config/polybar/launch.sh <<EOF
 #!/bin/bash
@@ -76,7 +111,16 @@ type = internal/tray
 EOF
 }
 
-# --- Execução
+setup_wallpaper_placeholder() {
+  mkdir -p ~/Pictures/Screenshots
+  mkdir -p ~/Pictures
+  if [ ! -f ~/Pictures/wallpaper.jpg ]; then
+    echo "[i] Nenhum wallpaper encontrado. Usando plano de fundo sólido..."
+    convert -size 1920x1080 xc:#1d1f21 ~/Pictures/wallpaper.jpg
+  fi
+}
+
+# Execução principal
 case "$distro" in
   a|A)
     install_arch
@@ -90,7 +134,8 @@ case "$distro" in
     ;;
 esac
 
-setup_autostart
+setup_i3_config
 setup_polybar
+setup_wallpaper_placeholder
 
-echo "[✓] Instalação concluída. Reinicie a sessão para carregar o i3 com polybar."
+echo "[✓] Instalação concluída. Reinicie e entre no i3!"
