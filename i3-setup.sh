@@ -10,7 +10,7 @@ install_arch() {
     kitty feh scrot network-manager-applet networkmanager-openvpn \
     pipewire pipewire-audio pipewire-alsa pipewire-pulse wireplumber \
     blueman bluez bluez-utils \
-    clipit gsimplecal ttf-ubuntu-font-family xorg xterm
+    clipit gsimplecal ttf-ubuntu-font-family xorg
   sudo systemctl enable lightdm
   sudo systemctl enable NetworkManager
   sudo systemctl enable bluetooth
@@ -22,7 +22,7 @@ install_debian() {
     kitty feh scrot network-manager-gnome network-manager-openvpn \
     pipewire pipewire-audio wireplumber \
     blueman bluetooth bluez \
-    clipit gsimplecal fonts-ubuntu xorg xterm
+    clipit gsimplecal fonts-ubuntu xorg
   sudo systemctl enable lightdm
   sudo systemctl enable NetworkManager
   sudo systemctl enable bluetooth
